@@ -1,12 +1,36 @@
 import 'package:reebapp/consttants.dart';
 import 'package:reebapp/screens/details_screen.dart';
+import 'package:reebapp/services/api/book.dart';
+import 'package:reebapp/services/models/book.dart';
 import 'package:reebapp/widgets/book_rating.dart';
 import 'package:reebapp/widgets/reading_card_list.dart';
 import 'package:reebapp/widgets/two_side_rounded_button.dart';
 
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  List<Book> book = [];
+
+  void initData() async {
+    List<Book> bookList = await BookApi.mostlyRead();
+    setState((){
+      book = bookList;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    initData();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -49,41 +73,32 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 30),
-                  SingleChildScrollView(
+                  ListView.builder(
                     physics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics()
                     ),
                     scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: <Widget>[
-                        ReadingListCard(
-                          image: "assets/images/book-1.png",
-                          title: "Crushing & Influence",
-                          auth: "Gary Venchuk",
-                          rating: 4.9,
-                          pressDetails: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return DetailsScreen();
-                                },
-                              ),
-                            );
-                          },
-                          pressRead: () {  },
-                        ),
-                        ReadingListCard(
-                          image: "assets/images/book-2.png",
-                          title: "Top Ten Business Hacks",
-                          auth: "Herman Joel",
-                          rating: 4.8,
-                          pressDetails: () {  },
-                          pressRead: () {  },
-                        ),
-                        SizedBox(width: 30),
-                      ],
-                    ),
+                    itemCount: book.length,
+                    itemBuilder: (context, index){
+                      final item = book[index];
+                      return ReadingListCard(
+                        image: item.imagePath!,
+                        title: item.name!,
+                        auth: item.author!,
+                        rating: item.rating!,
+                        pressDetails: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return DetailsScreen();
+                              },
+                            ),
+                          );
+                        },
+                        pressRead: () {  },
+                      );
+                    },
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24),
@@ -357,7 +372,7 @@ class HomeScreen extends StatelessWidget {
                     child: Row(
                       children: <Widget>[
                         Padding(
-                          padding: EdgeInsets.only(right: 10.0), 
+                          padding: EdgeInsets.only(right: 10.0),
                           child: BookRating(score: 4.9),
                         ),
                         Expanded(

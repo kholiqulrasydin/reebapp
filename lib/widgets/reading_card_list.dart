@@ -48,7 +48,7 @@ class ReadingListCard extends StatelessWidget {
               ),
             ),
           ),
-          Image.asset(
+          Image.network(
             image,
             width: 150,
           ),

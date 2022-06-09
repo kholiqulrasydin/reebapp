@@ -9,6 +9,9 @@ class DetailsScreen extends StatelessWidget {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics()
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -168,6 +171,7 @@ class DetailsScreen extends StatelessWidget {
     );
   }
 }
+
 
 class ChapterCard extends StatelessWidget {
   final String name;
@@ -336,3 +340,4 @@ class BookInfo extends StatelessWidget {
     );
   }
 }
+

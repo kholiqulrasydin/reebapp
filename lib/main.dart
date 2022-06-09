@@ -1,9 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:reebapp/consttants.dart';
 import 'package:reebapp/screens/home_screen.dart';
+import 'package:reebapp/services/api/authentication.dart';
 import 'package:reebapp/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -57,15 +63,22 @@ class WelcomeScreen extends StatelessWidget {
               child: RoundedButton(
                 text: "start reading",
                 fontSize: 20,
-                press: () {
-                  Navigator.push(
+                press: () async {
+                  await Authentication.signInUsingGoogle().then((value) => value == 200 ? Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) {
                         return HomeScreen();
                       },
                     ),
-                  );
+                  ) : Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return WelcomeScreen();
+                      },
+                    ),
+                  ));
                 },
               ),
             ),

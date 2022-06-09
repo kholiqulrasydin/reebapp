@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "560971843583",
+    "project_id": "reebapp-24f13",
+    "storage_bucket": "reebapp-24f13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560971843583:android:a22d5eb42637b1103c89ca",
+        "android_client_info": {
+          "package_name": "com.pemvisone.reebapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "560971843583-cc83it1u2l8n7dsmjghaeu8tt31bsopc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pemvisone.reebapp",
+            "certificate_hash": "10c6d6518af415a85242e6159173241de9dcdc51"
+          }
+        },
+        {
+          "client_id": "560971843583-t7hu5t6okg7b4nh0gfpri4ipaph3232d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaPdVXrUX0xhcOYW1i2Ai1kijt6x_MolQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560971843583-t7hu5t6okg7b4nh0gfpri4ipaph3232d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
