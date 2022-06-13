@@ -5,11 +5,13 @@ class TwoSideRoundedButton extends StatelessWidget {
   final String text;
   final double radious;
   final Function() press;
+  final Color color;
   const TwoSideRoundedButton({
     Key ? key,
     required this.text,
     this.radious = 29,
     required this.press,
+    required this.color
   }) : super(key: key);
 
   @override

@@ -1,9 +1,54 @@
 import 'package:reebapp/consttants.dart';
+import 'package:reebapp/screens/components/sizeconfig.dart';
+import 'package:reebapp/screens/reader.dart';
+import 'package:reebapp/services/api/book.dart';
+import 'package:reebapp/services/models/book.dart';
 import 'package:reebapp/widgets/book_rating.dart';
 import 'package:reebapp/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 
-class DetailsScreen extends StatelessWidget {
+class DetailsScreen extends StatefulWidget {
+  final Book book;
+  const DetailsScreen({Key? key, required this.book}) : super(key: key);
+
+  @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  bool isFavorite = false;
+  String bookTitle = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    isFavorite = widget.book.isFavorite!;
+    setBookTitle();
+    super.initState();
+  }
+
+  void favSet() async {
+    if(!isFavorite){
+      await BookApi.addToFavorites(widget.book.docId!);
+    }else{
+      await BookApi.deleteFromFavorites(widget.book.docId!);
+    }
+    setState((){
+      isFavorite = !isFavorite;
+    });
+  }
+
+  void setBookTitle(){
+    if(widget.book.name!.contains(" ") && widget.book.name!.split(" ").length > 2){
+      var conn = StringBuffer();
+      List.generate(widget.book.name!.split(" ").length, (index) => index > 0 ? widget.book.name!.split(" ")[index]+" " : "")
+          .toList().forEach((element) {conn.write(element);});
+      setState((){
+        bookTitle = conn.toString();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -32,39 +77,27 @@ class DetailsScreen extends StatelessWidget {
                       bottomRight: Radius.circular(50),
                     ),
                   ),
-                  child: BookInfo(size: size,)
+                  child: BookInfo(size: size, book: widget.book, onPressed: favSet, title: bookTitle, isFav: isFavorite, readPress: (){
+                    Navigator.of(context).push(MaterialPageRoute(builder: (contex) => Reader(book: widget.book, initialPage: 1,)));
+                  },)
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: size.height * .48 - 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      ChapterCard(
-                        name: "Money",
-                        chapterNumber: 1,
-                        tag: "Life is about change",
-                        press: () {},
-                      ),
-                      ChapterCard(
-                        name: "Power",
-                        chapterNumber: 2,
-                        tag: "Everything loves power",
-                        press: () {},
-                      ),
-                      ChapterCard(
-                        name: "Influence",
-                        chapterNumber: 3,
-                        tag: "Influence easily like never before",
-                        press: () {},
-                      ),
-                      ChapterCard(
-                        name: "Win",
-                        chapterNumber: 4,
-                        tag: "Winning is what matters",
-                        press: () {},
-                      ),
-                      SizedBox(height: 10),
-                    ],
+                Container(
+                  margin: EdgeInsets.only(top: size.height * .48 - 20, bottom: size.height * .05 - 20),
+                  height: SizeConfig.getSize(context, heightPercent: 20 * (widget.book.part!.length + .0)).height,
+                  child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                      itemCount: widget.book.part!.length,
+                      itemBuilder: (context, index){
+                        final item = widget.book.part![index];
+                        return ChapterCard(
+                          name: item['title'],
+                          chapterNumber: index+1,
+                          tag: item['desc'],
+                          press: (){
+                            Navigator.of(context).push(MaterialPageRoute(builder: (contex) => Reader(book: widget.book, initialPage: item['page'],)));
+                          },
+                        );
+                      }
                   ),
                 ),
               ],
@@ -210,7 +243,7 @@ class ChapterCard extends StatelessWidget {
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: "Chapter $chapterNumber : $name \n",
+                  text: "$name \n",
                   style: TextStyle(
                     fontSize: 16,
                     color: kBlackColor,
@@ -243,9 +276,19 @@ class BookInfo extends StatelessWidget {
   const BookInfo({
     Key ? key,
     required this.size,
+    required this.book,
+    this.onPressed,
+    required this.title,
+    required this.isFav,
+    this.readPress
   }) : super(key: key);
 
   final Size size;
+  final Book book;
+  final Function() ? onPressed;
+  final String title;
+  final bool isFav;
+  final Function() ? readPress;
 
   @override
   Widget build(BuildContext context) {
@@ -261,24 +304,26 @@ class BookInfo extends StatelessWidget {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "Crushing &",
+                    (book.name!.contains(" ") && book.name!.split(" ").length > 2) ? book.name!.split(" ").first : book.name!,
                     style: Theme.of(context).textTheme.headline4!.copyWith(
                       fontSize: 28
                     ),
                   ),
                 ),
-                Container(
-                  margin: EdgeInsets.only(top: this.size.height * .005),
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(top: 0),
-                  child: Text(
-                    "Influence",
-                    style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
+                if(book.name!.contains(" ") && book.name!.split(" ").length > 2)
+                  Container(
+                    margin: EdgeInsets.only(top: this.size.height * .005),
+                    alignment: Alignment.centerLeft,
+                    padding: EdgeInsets.only(top: 0),
+                    child: Text(
+                      this.title,
+                      style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                ),
                 Row(
                   children: <Widget>[
                     Column(
@@ -288,7 +333,7 @@ class BookInfo extends StatelessWidget {
                           width: this.size.width * .3,
                           padding: EdgeInsets.only(top: this.size.height * .02),
                           child: Text(
-                            "When the earth was flat andeveryone wanted to win the gameof the best and people and winning with an A game with all the things you have.",
+                            book.desc!,
                             maxLines: 5,
                             style: TextStyle(
                               fontSize: 10,
@@ -303,8 +348,8 @@ class BookInfo extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          child: FlatButton(
-                            onPressed: () {},
+                          child: MaterialButton(
+                            onPressed: readPress,
                             child: Text("Read", style: TextStyle(fontWeight: FontWeight.bold),),
                           ), 
                         )
@@ -313,10 +358,14 @@ class BookInfo extends StatelessWidget {
                     Column(
                       children: <Widget>[
                         IconButton(
-                            icon: Icon(Icons.favorite_border, size: 20, color: Colors.grey,),
-                            onPressed: () {},
+                            icon: Icon(
+                              isFav ? Icons.favorite : Icons.favorite_border,
+                              size: 20,
+                              color: isFav? Colors.redAccent : Colors.grey,
+                            ),
+                            onPressed: onPressed,
                         ), 
-                        BookRating(score: 4.9),
+                        BookRating(score: book.rating!),
                       ],
                     )
                   ],
@@ -328,8 +377,8 @@ class BookInfo extends StatelessWidget {
             flex: 1,
             child: Container(
               color: Colors.transparent,
-              child: Image.asset(
-                "assets/images/book-1.png",
+              child: Image.network(
+                book.imagePath!,
                 height: double.infinity,
                 alignment: Alignment.topRight,
                 fit: BoxFit.fitWidth,

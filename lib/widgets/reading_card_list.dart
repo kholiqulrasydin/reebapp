@@ -1,4 +1,6 @@
 import 'package:reebapp/consttants.dart';
+import 'package:reebapp/services/api/book.dart';
+import 'package:reebapp/services/models/book.dart';
 import 'package:reebapp/widgets/book_rating.dart';
 import 'package:reebapp/widgets/two_side_rounded_button.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,9 @@ class ReadingListCard extends StatelessWidget {
   final double rating;
   final Function() pressDetails;
   final Function() pressRead;
+  final bool isFavorite;
+  final Function() pressFavorite;
+  final bool isRead;
 
   const ReadingListCard({
     Key ? key,
@@ -19,6 +24,9 @@ class ReadingListCard extends StatelessWidget {
     required this.rating,
     required this.pressDetails,
     required this.pressRead,
+    required this.isFavorite,
+    required this.pressFavorite,
+    required this.isRead
   }) : super(key: key);
 
   @override
@@ -38,13 +46,13 @@ class ReadingListCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(29),
-                boxShadow: [
-                  BoxShadow(
-                    offset: Offset(0, 10),
-                    blurRadius: 33,
-                    color: kShadowColor,
-                  ),
-                ],
+                // boxShadow: [
+                //   BoxShadow(
+                //     offset: Offset(0, 10),
+                //     blurRadius: 33,
+                //     color: kShadowColor,
+                //   ),
+                // ],
               ),
             ),
           ),
@@ -59,9 +67,10 @@ class ReadingListCard extends StatelessWidget {
               children: <Widget>[
                 IconButton(
                   icon: Icon(
-                    Icons.favorite_border,
+                    this.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: this.isFavorite ? Colors.redAccent : Colors.blueGrey,
                   ),
-                  onPressed: () {},
+                  onPressed: pressFavorite,
                 ),
                 BookRating(score: rating),
               ],
@@ -113,8 +122,9 @@ class ReadingListCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: TwoSideRoundedButton(
-                          text: "Read",
+                          text: isRead ? "Resume" : "Read",
                           press: pressRead,
+                          color: isRead ? kProgressIndicator : kBlackColor,
                         ),
                       )
                     ],

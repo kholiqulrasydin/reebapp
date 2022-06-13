@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:reebapp/consttants.dart';
-import 'package:reebapp/screens/home_screen.dart';
 import 'package:reebapp/services/api/authentication.dart';
+import 'package:reebapp/services/wrapper.dart';
 import 'package:reebapp/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
               displayColor: kBlackColor,
             ),
       ),
-      home: WelcomeScreen(),
+      home: Wrapper(),
     );
   }
 }
@@ -64,21 +64,31 @@ class WelcomeScreen extends StatelessWidget {
                 text: "start reading",
                 fontSize: 20,
                 press: () async {
-                  await Authentication.signInUsingGoogle().then((value) => value == 200 ? Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return HomeScreen();
-                      },
-                    ),
-                  ) : Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return WelcomeScreen();
-                      },
-                    ),
-                  ));
+                  await Authentication.signInUsingGoogle().then((value) =>
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return Wrapper();
+                            },
+                          ),
+                        )
+                  // value == 200 ? Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return HomeScreen();
+                  //     },
+                  //   ),
+                  // ) : Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) {
+                  //       return WelcomeScreen();
+                  //     },
+                  //   ),
+                  // )
+                  );
                 },
               ),
             ),
